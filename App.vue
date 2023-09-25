@@ -153,6 +153,7 @@ onMounted(async () => {
   }
 
   window.addEventListener("keydown", (e) => {
+    e.preventDefault()
     if (currScene == scene.welcome) {
     } else if (currScene == scene.levelSelect) {
       if (["ArrowUp", "w"].includes(e.key)) levelSelect.moveUp();
@@ -178,6 +179,7 @@ onMounted(async () => {
   });
 
   window.addEventListener("keyup", (e) => {
+    e.preventDefault()
     if (currScene == scene.welcome) {
       GlobalState.leaveWelcome = true;
       currScene = scene.levelSelect;

@@ -59,10 +59,13 @@ onMounted(async () => {
       maze.draw(ctx);
       player.draw(ctx);
     } else if (currScene == scene.levelSelect) {
+      ctx.save()
+      ctx.scale(2,2)
       ctx.fillStyle = "#2e2e2e";
       ctx.fillRect(0, 0, c.width, c.height);
 
       levelSelect.draw(ctx);
+      ctx.restore()
     } else if (currScene == scene.welcome) {
       welcomeMaze.reset(cw / 20, ch / 20, blocksize);
       welcomeMaze.draw(ctx);
@@ -81,6 +84,7 @@ onMounted(async () => {
 				return;
 			} 
       welcomeMaze.draw(ctx);
+      ctx.lineWidth = GlobalState.traceWidth
       for (let prev of <Node[]>welcomeSolution?.reverse()) {
         ctx.strokeStyle = "green";
         ctx.beginPath();
@@ -105,8 +109,8 @@ onMounted(async () => {
   }
 
   function setupLevelSelect() {
-		cw = 600;
-		ch = 400;
+		cw = 1200;
+		ch = 800;
     c.width = cw
     c.height = ch
   }
@@ -130,7 +134,6 @@ onMounted(async () => {
       if (keys["w"] || keys["ArrowUp"]) {
         if (!walls?.top) {
           player.y -= 20;
-          console.log("moveUp");
         }
       }
       if (keys["s"] || keys["ArrowDown"]) {
@@ -153,19 +156,24 @@ onMounted(async () => {
   }
 
   window.addEventListener("keydown", (e) => {
+    const up = ["w", "ArrowUp"],
+      down = ["s", "ArrowDown"],
+      left = ["a", "ArrowLeft"],
+      right = ["d", "ArrowRight"];
     e.preventDefault()
     if (currScene == scene.welcome) {
     } else if (currScene == scene.levelSelect) {
-      if (["ArrowUp", "w"].includes(e.key)) levelSelect.moveUp();
-      else if (["ArrowDown", "s"].includes(e.key)) levelSelect.moveDown();
-      else if (["ArrowLeft", "a"].includes(e.key)) levelSelect.moveLeft();
-      else if (["ArrowRight", "d"].includes(e.key)) levelSelect.moveRight();
+      if (up.includes(e.key)) levelSelect.moveUp();
+      else if (down.includes(e.key)) levelSelect.moveDown();
+      else if (left.includes(e.key)) levelSelect.moveLeft();
+      else if (right.includes(e.key)) levelSelect.moveRight();
       else if (e.key == " ") {
         const l = levelSelect.getLevel();
         setupGame(l.w, l.h);
       }
     } else if (currScene == scene.game) {
       if (e.key == " ") {
+        setupLevelSelect();
         currScene = scene.levelSelect;
         return;
       }

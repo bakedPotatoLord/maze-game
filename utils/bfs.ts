@@ -1,6 +1,7 @@
 import type Node from './Node'
 
 export default async function bfs(start:Node,end:Node,nodes:Map<string,Node>,blockSize:number,ctx:CanvasRenderingContext2D,traceRoutes?:boolean, traceSpeed?:number){
+  ctx.lineWidth = GlobalState.traceWidth
   nodes.forEach(el=>el.visited = false)
   let que: Node[] =[]
   start.visited = true

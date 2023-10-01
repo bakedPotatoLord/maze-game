@@ -21,6 +21,18 @@ export default class Node{
     this.parent = parent
   }
 
+  reset(){
+    this.children = []
+    this.parent = undefined
+    this.isStartingNode = false
+    this.isEndingNode = false
+    this.visited = false
+    this.generation = 0
+    this.wallsTo = undefined
+    this.walls = undefined
+  }
+
+
   topLine(ctx:CanvasRenderingContext2D,blockSize:number){
     console.log('topline called')
     ctx.strokeStyle = 'black'
@@ -47,7 +59,8 @@ export default class Node{
       ctx.fill()
       
     }
-    ctx.strokeStyle ='rgb(0,0,0)'
+    ctx.strokeStyle ='#000000'
+    ctx.fillStyle ='#000000'
 
     this.wallsTo?.forEach((el)=>{
       ctx.save()
@@ -57,11 +70,10 @@ export default class Node{
       ctx.beginPath()
       ctx.moveTo(blockSize/2,blockSize/2)
       ctx.lineTo(blockSize/2,-blockSize/2)
-      ctx.lineTo(blockSize/2,blockSize/2)
-      ctx.lineTo(blockSize/2,-blockSize/2)
-      ctx.lineTo(blockSize/2,blockSize/2)
-      ctx.lineTo(blockSize/2,-blockSize/2)
       ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(blockSize/2,blockSize/2,2,0,Node.TAU)
+      ctx.fill() 
       ctx.restore()
     })
   }

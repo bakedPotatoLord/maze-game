@@ -33,6 +33,7 @@ export default class LevelSelect {
     ctx.fillStyle = "white"
     ctx.lineWidth = 3
     ctx.strokeStyle = "black"
+    ctx.textAlign = "center"
     ctx.fillText("Level Select", this.cw / 2, this.ch / 5)
     this.levels.forEach(el => el.draw(ctx))
     this.selected.drawSelected(ctx)

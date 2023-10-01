@@ -9,6 +9,12 @@ export default class Maze{
     private blocksize:number
     private numW: number
     private numH: number
+    /* a map [width=> nodemap]*/
+    private static nodemaps = new Map(
+        LevelSelect.levelMap.map((el)=>[el.w,makeSquareNodeMap(el.w,el.h,20)])
+    )
+
+    private imagedata = new ImageData(1,1)
 
     // declare graph algorithm vars
 	nodes:Map<string,Node>
@@ -43,6 +49,8 @@ export default class Maze{
                 bottom:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y+20)?.length?? 0) >0|| n.y == this.ch - blocksize/2,
             }
         })  
+        //generate imageData
+        this.generate()
         console.log("maze constructed successfully")
     }
 
@@ -55,7 +63,9 @@ export default class Maze{
         this.numW = numW
         this.numH = numH
 
-        this.nodes = makeSquareNodeMap(this.cw,this.ch,this.blocksize) 
+        this.nodes = Maze.nodemaps.get(this.cw) ?? <never> console.error("nodemap not found") 
+
+        this.nodes.forEach(n=>n.reset())
 
         //create start and end nodes
         this.startingNode = this.nodes.entries().next().value[1]
@@ -64,9 +74,10 @@ export default class Maze{
         .pop()?.[1]
         if(this.endingNode) this.endingNode.isEndingNode = true
 
+        
         //do the grunt work
 	    rdfs(this.nodes,this.startingNode,this.blocksize)    
-
+        
         this.nodes.forEach(n=>{
             n.walls ={
                 left:( n?.wallsTo?.filter(no=>no.x == n.x-20 && no.y ==n.y)?.length?? 0) > 0 || n.x == this.blocksize/2,
@@ -75,21 +86,36 @@ export default class Maze{
                 bottom:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y+20)?.length?? 0) >0|| n.y == this.ch - this.blocksize/2,
             }
         }) 
+        this.generate()
     }
+    
+    private generate(){
 
-    draw(ctx:CanvasRenderingContext2D){
-		ctx.fillStyle  = 'white'
+        let c=document.createElement('canvas')
+        c.hidden = true
+        document.body.appendChild(c)
+        let ctx = c.getContext('2d') ?? <never>undefined
+
+        c.width = this.cw
+        c.height = this.ch 
+
+        ctx.fillStyle  = 'white'
         ctx.clearRect(0,0,this.cw,this.ch)
         ctx.strokeStyle = 'purple'
         ctx.lineWidth = 3
         ctx.fillRect(0,0,this.cw,this.ch)
-        // ctx.beginPath
-        // ctx.rect(1,1,this.cw-1,this.ch-1)
-        // ctx.stroke()
         //draw all nodes
         this.nodes.forEach(el=>el.draw(ctx,this.blocksize))
-        //use breadth-first search because depth first will find "a" solutoion, but not "the" solutoin  
-        //bfs(startingNode,endingNode,nodes,blockSize,false) 
+
+        this.imagedata = ctx.getImageData(0,0,this.cw,this.ch)
+        console.log(this.imagedata)
+        document.body.removeChild(c)
+    }
+
+    draw(ctx:CanvasRenderingContext2D){
+        ctx.canvas.width = this.cw
+        ctx.canvas.height = this.ch
+		ctx.putImageData(this.imagedata,0,0)
     }
   
   

@@ -27,8 +27,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
       - name: install dependencies
-        run: npm ci
+        run: bun i
       - name: vite build
         run: npm run build 
       - name: copy to 404

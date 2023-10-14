@@ -33,17 +33,15 @@ jobs:
           bun-version: latest
       - name: install dependencies
         run: bun i
-      - name: vite build
-        run: npm run build 
-      - name: copy to 404
-        run: cp dist/index.html dist/404.html
+      - name: nuxt generate
+        run: bun generate
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: './dist'
+          path: './.output/public'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1

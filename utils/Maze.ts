@@ -1,122 +1,131 @@
-import { makeSquareNodeMap} from './helpers'
+import { makeSquareNodeMap } from './helpers'
 import Node from './Node'
 import rdfs from './rdfs'
 
-export default class Maze{
-    // declare canvas vars
-    private cw:number
-    private ch:number
-    private blocksize:number
-    private numW: number
-    private numH: number
-    /* a map [width=> nodemap]*/
-    private static nodemaps = new Map(
-        LevelSelect.levelMap.map((el)=>[el.w,makeSquareNodeMap(el.w,el.h,20)])
-    )
+export default class Maze {
+	// declare canvas vars
+	private cw: number
+	private ch: number
+	private blocksize: number
+	private numW: number
+	private numH: number
+	/* a map [width=> nodemap]*/
+	private static readonly nodemaps = new Map(
+		LevelSelect.levelMap.map((el) => [el.w, makeSquareNodeMap(el.w, el.h, 20)])
+	)
 
-    private imagedata = new ImageData(1,1)
 
-    // declare graph algorithm vars
-	nodes:Map<string,Node>
-	startingNode:Node
-	endingNode?:Node
 
-    constructor(numW=20,numH=20,blocksize=20){
-        this.cw = numW * blocksize
-        this.ch = numH * blocksize
-        this.blocksize = blocksize
+	// declare graph algorithm vars
+	nodes: Node[][]
+	flatNodes: Node[]
+	startingNode: Node
+	endingNode?: Node
 
-        this.numW = numW
-        this.numH = numH
+	constructor(numW = 20, numH = 20, blocksize = 20) {
+		this.cw = numW * blocksize
+		this.ch = numH * blocksize
+		this.blocksize = blocksize
 
-	    this.nodes = makeSquareNodeMap(this.cw,this.ch,this.blocksize) 
+		this.numW = numW
+		this.numH = numH
 
-        //create start and end nodes
-        this.startingNode = this.nodes.entries().next().value[1]
-        if(this.startingNode) this.startingNode.isStartingNode = true
-        this.endingNode = Array.from(this.nodes.entries())
-        .pop()?.[1]
-        if(this.endingNode) this.endingNode.isEndingNode = true
+		this.nodes = Maze.nodemaps.get(this.cw) ?? <never>console.error("nodemap not found")
+		this.flatNodes = this.nodes.flat()
 
-        //do the grunt work
-	    rdfs(this.nodes,this.startingNode,this.blocksize)    
+		this.flatNodes.forEach(el => el.reset());
 
-        this.nodes.forEach(n=>{
-            n.walls ={
-                left:( n?.wallsTo?.filter(no=>no.x == n.x-20 && no.y ==n.y)?.length?? 0) > 0 || n.x == blocksize/2,
-                right:( n?.wallsTo?.filter(no=>no.x == n.x+20 && no.y ==n.y)?.length?? 0)>0 || n.x == this.cw - blocksize/2,
-                top:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y-20)?.length?? 0)>0 || n.y == blocksize/2,
-                bottom:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y+20)?.length?? 0) >0|| n.y == this.ch - blocksize/2,
-            }
-        })  
-        //generate imageData
-        this.generate()
-        console.log("maze constructed successfully")
-    }
+		//create start and end nodes
+		(this.startingNode = this.nodes[0][0])
+			.isStartingNode = true;
 
-    reset(numW=20,numH=20,blocksize=20){
+		(this.endingNode = this.nodes.at(-1).at(-1))
+			.isEndingNode = true;
 
-        this.cw = numW * blocksize
-        this.ch = numH * blocksize
-        this.blocksize = blocksize
+		//do the grunt work
+		rdfs(this.flatNodes, this.nodes, this.startingNode, this.blocksize)
 
-        this.numW = numW
-        this.numH = numH
+		this.setNodeWalls(this.flatNodes)
+		//generate imageData
+		this.generate()
+		console.log("maze constructed successfully")
+	}
 
-        this.nodes = Maze.nodemaps.get(this.cw) ?? <never> console.error("nodemap not found") 
+	reset(numW = 20, numH = 20, blocksize = 20) {
 
-        this.nodes.forEach(n=>n.reset())
+		this.cw = numW * blocksize
+		this.ch = numH * blocksize
+		this.blocksize = blocksize
 
-        //create start and end nodes
-        this.startingNode = this.nodes.entries().next().value[1]
-        if(this.startingNode) this.startingNode.isStartingNode = true
-        this.endingNode = Array.from(this.nodes.entries())
-        .pop()?.[1]
-        if(this.endingNode) this.endingNode.isEndingNode = true
+		this.numW = numW
+		this.numH = numH
 
-        
-        //do the grunt work
-	    rdfs(this.nodes,this.startingNode,this.blocksize)    
-        
-        this.nodes.forEach(n=>{
-            n.walls ={
-                left:( n?.wallsTo?.filter(no=>no.x == n.x-20 && no.y ==n.y)?.length?? 0) > 0 || n.x == this.blocksize/2,
-                right:( n?.wallsTo?.filter(no=>no.x == n.x+20 && no.y ==n.y)?.length?? 0)>0 || n.x == this.cw - this.blocksize/2,
-                top:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y-20)?.length?? 0)>0 || n.y == this.blocksize/2,
-                bottom:( n?.wallsTo?.filter(no=>no.x == n.x && no.y ==n.y+20)?.length?? 0) >0|| n.y == this.ch - this.blocksize/2,
-            }
-        }) 
-        this.generate()
-    }
-    
-    private generate(){
+		this.nodes = Maze.nodemaps.get(this.cw) ?? <never>console.error("nodemap not found")
+		this.flatNodes = this.nodes.flat()
 
-        let c=document.createElement('canvas')
-        c.hidden = true
-        document.body.appendChild(c)
-        let ctx = c.getContext('2d') ?? <never>undefined
+		this.flatNodes.forEach(n => n.reset());
+		//create start and end nodes
+		(this.startingNode = this.nodes[0][0])
+			.isStartingNode = true;
 
-        c.width = this.cw
-        c.height = this.ch 
+		(this.endingNode = this.nodes.at(-1).at(-1))
+			.isEndingNode = true;
 
-        ctx.fillStyle  = 'white'
-        ctx.clearRect(0,0,this.cw,this.ch)
-        ctx.strokeStyle = 'purple'
-        ctx.lineWidth = 3
-        ctx.fillRect(0,0,this.cw,this.ch)
-        //draw all nodes
-        this.nodes.forEach(el=>el.draw(ctx,this.blocksize))
+		//do the grunt work
+		rdfs(this.flatNodes, this.nodes, this.startingNode, this.blocksize)
 
-        this.imagedata = ctx.getImageData(0,0,this.cw,this.ch)
-        console.log(this.imagedata)
-        document.body.removeChild(c)
-    }
+		this.setNodeWalls(this.flatNodes)
 
-    draw(ctx:CanvasRenderingContext2D){
-        ctx.canvas.width = this.cw
-        ctx.canvas.height = this.ch
-		ctx.putImageData(this.imagedata,0,0)
-    }
-  
-  
+		this.generate()
+	}
+
+	private generate() {
+		const c = document.createElement('canvas')
+		c.hidden = true
+		document.body.appendChild(c)
+		const ctx = c.getContext('2d') ?? <never>undefined
+
+		c.width = this.cw
+		c.height = this.ch
+
+		ctx.fillStyle = 'white'
+		ctx.clearRect(0, 0, this.cw, this.ch)
+		ctx.strokeStyle = 'purple'
+		ctx.lineWidth = 3
+		ctx.fillRect(0, 0, this.cw, this.ch)
+		//draw all nodes
+		this.flatNodes.forEach(el => el.draw(ctx, this.blocksize))
+
+		GlobalState.imageData = ctx.getImageData(0, 0, this.cw, this.ch)
+		//console.log(this.imagedata)
+		document.body.removeChild(c)
+
+
+	}
+
+	draw(ctx: CanvasRenderingContext2D) {
+		ctx.canvas.width = this.cw
+		ctx.canvas.height = this.ch
+		ctx.putImageData(GlobalState.imageData, 0, 0)
+	}
+
+	setNodeWalls(nodes: Node[],) {
+		for (let n of nodes) {
+			if (n.walls) {
+				n.walls.left = (n.wallsTo?.filter(no => no.x == n.x - this.blocksize && no.y == n.y)?.length ?? 0) > 0 || n.x == this.blocksize / 2
+				n.walls.right = (n?.wallsTo?.filter(no => no.x == n.x + this.blocksize && no.y == n.y)?.length ?? 0) > 0 || n.x == this.cw - this.blocksize / 2
+				n.walls.top = (n?.wallsTo?.filter(no => no.x == n.x && no.y == n.y - this.blocksize)?.length ?? 0) > 0 || n.y == this.blocksize / 2
+				n.walls.bottom = (n?.wallsTo?.filter(no => no.x == n.x && no.y == n.y + this.blocksize)?.length ?? 0) > 0 || n.y == this.ch - this.blocksize / 2
+			} else {
+				n.walls = {
+					left: (n.wallsTo?.filter(no => no.x == n.x - this.blocksize && no.y == n.y)?.length ?? 0) > 0 || n.x == this.blocksize / 2,
+					right: (n?.wallsTo?.filter(no => no.x == n.x + this.blocksize && no.y == n.y)?.length ?? 0) > 0 || n.x == this.cw - this.blocksize / 2,
+					top: (n?.wallsTo?.filter(no => no.x == n.x && no.y == n.y - this.blocksize)?.length ?? 0) > 0 || n.y == this.blocksize / 2,
+					bottom: (n?.wallsTo?.filter(no => no.x == n.x && no.y == n.y + this.blocksize)?.length ?? 0) > 0 || n.y == this.ch - this.blocksize / 2,
+				}
+			}
+		}
+	}
+
+
 }

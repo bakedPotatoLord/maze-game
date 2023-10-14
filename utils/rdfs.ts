@@ -4,11 +4,11 @@ import type Node from './Node';
  * @author Josiah Hamm / @bakedPotatoLord
  * @license MIT
  */
-export default function rdfs(nodes:Map<string,Node>,startingNode:Node,blockSize:number){
+export default function rdfs(nodes:Node[],nodeMatrix:Node[][],startingNode:Node,blockSize:number){
   // reset all nodes to default state
   nodes.forEach(n=>{
     n.visited = false
-    n.wallsTo = n.getTouchingNodes(nodes,blockSize)
+    n.wallsTo = n.getTouchingNodes(nodeMatrix,blockSize)
   })
   //initialize algorithm
   startingNode.visited = true
@@ -18,7 +18,7 @@ export default function rdfs(nodes:Map<string,Node>,startingNode:Node,blockSize:
     let current =<Node> que.shift()
     // 
     let unvisited = current
-      .getTouchingNodes(nodes,blockSize)
+      .getTouchingNodes(nodeMatrix,blockSize)
         .filter((el)=>!el?.visited)
     // only add nodes to stack if they can grow
     if(unvisited.length){ //type coersion go brrr

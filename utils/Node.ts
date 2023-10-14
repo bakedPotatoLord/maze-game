@@ -29,7 +29,6 @@ export default class Node{
     this.visited = false
     this.generation = 0
     this.wallsTo = undefined
-    this.walls = undefined
   }
 
 
@@ -80,22 +79,27 @@ export default class Node{
 
   addChildren=(...node:Node[])=>this.children.push(...node)
 
-  getTouchingNodes(nodes:Map<nodeHash,Node>,blockSize:number){
+  getTouchingNodes(nodes:Node[][],blockSize:number){
+
+    const x = (this.x-10)/blockSize
+    const y = (this.y-10)/blockSize
     return <Node[]> [
-      nodes.get(this.hashFrom(this.x+blockSize,this.y)),
-      nodes.get(this.hashFrom(this.x,this.y+blockSize)),
-      nodes.get(this.hashFrom(this.x-blockSize,this.y)),
-      nodes.get(this.hashFrom(this.x,this.y-blockSize)),
+      x+1 < nodes.length ? nodes.at(x+1)?.at(y): undefined,
+      x-1 >= 0 ?nodes.at(x-1)?.at(y): undefined,
+      y+1 < nodes.length ? nodes.at(x)?.at(y+1): undefined,
+      y-1 >= 0 ?nodes.at(x)?.at(y-1): undefined,
+      
+      
     ].filter(el=> el ?? false)
   }
 
-  getViableNodes(nodes:Map<nodeHash,Node>,blockSize:number){
+  getViableNodes(nodes:Node[][],blockSize:number){
     let tNodes = this.getTouchingNodes(nodes,blockSize)
-    return (<Node[]>tNodes
-    .filter(el=>el!==undefined))
+    return (<Node[]>tNodes)
     .filter(
-      el=>!this?.wallsTo?.includes(el) && 
-      !el?.wallsTo?.includes(this)
+      el=>el!==undefined &&
+      !this.wallsTo.includes(el) && 
+      !el.wallsTo.includes(this)
     )
   }
 
@@ -105,8 +109,4 @@ export default class Node{
     ctx.lineTo(node.x,node.y)
     ctx.stroke()
   }
-
-  toHash = ():nodeHash=> this.x+','+this.y
-
-  hashFrom = (...args:number[])=>args.join(',')
 }

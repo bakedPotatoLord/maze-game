@@ -1,12 +1,12 @@
 import type Node from './Node'
 
-export default async function bfs(start:Node,end:Node,nodes:Map<string,Node>,blockSize:number,ctx:CanvasRenderingContext2D,traceRoutes?:boolean, traceSpeed?:number){
+export default async function bfs(start:Node,end:Node,nodes:Node[][],blockSize:number,ctx:CanvasRenderingContext2D,traceRoutes?:boolean, traceSpeed?:number){
   ctx.lineWidth = GlobalState.traceWidth
-  nodes.forEach(el=>el.visited = false)
-  let que: Node[] =[]
+  const flatNodes = nodes.flat()
+  flatNodes.forEach(el=>el.visited = false)
+  let que: Node[] =[start]
   start.visited = true
   start.generation = 0
-  que.push(start)
   while(que.length >0){
     let v = <Node>que.shift()
     for(let child of v.getViableNodes(nodes,blockSize)){
@@ -30,6 +30,7 @@ export default async function bfs(start:Node,end:Node,nodes:Map<string,Node>,blo
           toReturn.push(next)
           next = <Node>next.parent
         }
+        que.length = 0
         return toReturn
       }
     }

@@ -2,15 +2,21 @@ export const TAU = 2* Math.PI
 import Node, { nodeHash } from "./Node"
 
 export function makeSquareNodeMap(cw:number,ch:number,blockSize:number){
-  return new Map(
-    Array((cw/blockSize)*(ch/blockSize)).fill(0).map((_el,i)=>{
-      return new Node(
-        (i%(cw/blockSize)*(blockSize))+(blockSize/2),
-        (Math.floor(i/(cw/blockSize))*(blockSize))+(blockSize/2)
-      )
-    })
-    .map(el=>[el.toHash(),el])
-  )
+  let arr:Node[][] = new Array(cw/blockSize)
+  .fill(undefined)
+  .map(()=>Array(ch/blockSize))
+
+  const numW = cw/blockSize
+  const numH = ch/blockSize
+  for(let i=0;i<numW;i++){
+    for(let j=0;j<numH;j++){
+      arr[i][j] = new Node(i*blockSize+10,j*blockSize+10)
+    }
+  }
+
+  console.log("nodemap created")
+
+  return arr
 }
 
 

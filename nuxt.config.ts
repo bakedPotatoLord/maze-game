@@ -2,4 +2,8 @@
 export default defineNuxtConfig({
   //devtools: { enabled: true }
   
+
+  vite:{
+    base: '/maze-game/'
+  }
 })

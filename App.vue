@@ -10,8 +10,6 @@ import Maze from "~/utils/Maze";
 import type Node from "~/utils/Node";
 import GlobalState from "~/utils/GlobalState";
 
-console.log("app run");
-
 enum scene {
   welcome,
   levelSelect,

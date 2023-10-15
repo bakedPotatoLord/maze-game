@@ -7,15 +7,9 @@ export default class Maze {
 	private cw: number
 	private ch: number
 	private blocksize: number
-	private numW: number
-	private numH: number
 	/* a map [width=> nodemap]*/
 	private static readonly nodemaps = new Map(
-		LevelSelect.levelMap.map((el) => [el.w, makeSquareNodeMap(el.w, el.h, 20)])
-	)
-
-
-
+		LevelSelect.levelMap.map((el) => [el.w, makeSquareNodeMap(el.w, el.h, 20)]))
 	// declare graph algorithm vars
 	nodes: Node[][]
 	flatNodes: Node[]
@@ -25,26 +19,20 @@ export default class Maze {
 	constructor(numW = 20, numH = 20, blocksize = 20) {
 		this.cw = numW * blocksize
 		this.ch = numH * blocksize
-		this.blocksize = blocksize
+		this.blocksize = blocksize;
 
-		this.numW = numW
-		this.numH = numH
-
-		this.nodes = Maze.nodemaps.get(this.cw) ?? <never>console.error("nodemap not found")
-		this.flatNodes = this.nodes.flat()
-
-		this.flatNodes.forEach(el => el.reset());
+		(this.flatNodes = (this.nodes = Maze.nodemaps.get(this.cw))
+			.flat())
+			.forEach(el => el.reset());
 
 		//create start and end nodes
 		(this.startingNode = this.nodes[0][0])
 			.isStartingNode = true;
-
 		(this.endingNode = this.nodes.at(-1).at(-1))
 			.isEndingNode = true;
 
 		//do the grunt work
 		rdfs(this.flatNodes, this.nodes, this.startingNode, this.blocksize)
-
 		this.setNodeWalls(this.flatNodes)
 		//generate imageData
 		this.generate()
@@ -52,30 +40,22 @@ export default class Maze {
 	}
 
 	reset(numW = 20, numH = 20, blocksize = 20) {
-
 		this.cw = numW * blocksize
 		this.ch = numH * blocksize
 		this.blocksize = blocksize
 
-		this.numW = numW
-		this.numH = numH
-
-		this.nodes = Maze.nodemaps.get(this.cw) ?? <never>console.error("nodemap not found")
-		this.flatNodes = this.nodes.flat()
-
+		this.flatNodes = (this.nodes = Maze.nodemaps.get(this.cw))
+			.flat()
 		this.flatNodes.forEach(n => n.reset());
 		//create start and end nodes
 		(this.startingNode = this.nodes[0][0])
 			.isStartingNode = true;
-
 		(this.endingNode = this.nodes.at(-1).at(-1))
 			.isEndingNode = true;
 
 		//do the grunt work
 		rdfs(this.flatNodes, this.nodes, this.startingNode, this.blocksize)
-
 		this.setNodeWalls(this.flatNodes)
-
 		this.generate()
 	}
 
@@ -97,10 +77,7 @@ export default class Maze {
 		this.flatNodes.forEach(el => el.draw(ctx, this.blocksize))
 
 		GlobalState.imageData = ctx.getImageData(0, 0, this.cw, this.ch)
-		//console.log(this.imagedata)
 		document.body.removeChild(c)
-
-
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
@@ -109,7 +86,7 @@ export default class Maze {
 		ctx.putImageData(GlobalState.imageData, 0, 0)
 	}
 
-	setNodeWalls(nodes: Node[],) {
+	setNodeWalls(nodes: Node[]) {
 		for (let n of nodes) {
 			if (n.walls) {
 				n.walls.left = (n.wallsTo?.filter(no => no.x == n.x - this.blocksize && no.y == n.y)?.length ?? 0) > 0 || n.x == this.blocksize / 2
@@ -126,6 +103,4 @@ export default class Maze {
 			}
 		}
 	}
-
-
 }

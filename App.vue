@@ -29,30 +29,36 @@ const blocksize = 20;
 const numW = () => cw / blocksize;
 const numH = () => ch / blocksize;
 
+useSeoMeta({
+  title: "Maze Game",
+  ogTitle: "Maze Game",
+  description: "Maze Game",
+  ogDescription: "Maze Game",
+})
+
 onMounted(async () => {
-  console.log("app mounted");
   let c = canvas.value ?? err();
   let ctx = c.getContext("2d") ?? err();
   ctx.fillStyle = "black";
-
   c.addEventListener("click", () => {
     c.requestFullscreen();
   });
-
   const keys: any = {};
   const levelSelect = new LevelSelect();
-  let welcomeMaze = new Maze(numW(), numH(), blocksize);
+  const welcomeMaze = new Maze(numW(), numH(), blocksize);
   let welcomeSolution: Node[] | null;
 
   let keyHandle: NodeJS.Timeout;
 
-  let maze = new Maze(numW(), numH(), blocksize);
+  const maze = new Maze(numW(), numH(), blocksize);
   let n = maze.nodes;
-  let player = new Player(blocksize / 2, blocksize / 2, 8);
+  const player = new Player(blocksize / 2, blocksize / 2, 8);
+  const popup = new  Popup();
   await setupWelcome();
   requestAnimationFrame(draw);
 
   async function draw() {
+    
     if (currScene == scene.game) {
       maze.draw(ctx);
       player.draw(ctx);
@@ -99,11 +105,11 @@ onMounted(async () => {
         }
       }
     }
+    popup.draw(ctx,cw,ch);   
     requestAnimationFrame(draw);
   }
 
   async function setupWelcome() {
-    console.log("setting up welcome screen");
     c.width = cw;
     c.height = ch;
   }
@@ -114,15 +120,12 @@ onMounted(async () => {
   }
 
   function setupGame(w: number, h: number) {
-    cw = w;
-    ch = h;
-    console.log("setting up game screen");
+    c.width =cw = w;
+    c.height =ch = h;
     maze.reset(cw / blocksize, ch / blocksize, blocksize);
     n = maze.nodes;
     player.reset();
     currScene = scene.game;
-    c.width = cw;
-    c.height = ch;
   }
 
   function keyHandler() {
@@ -136,6 +139,7 @@ onMounted(async () => {
       if ((keys["d"] || keys["ArrowRight"]) && !walls?.right) player.x += 20;
       player.draw(ctx);
     }
+
   }
 
   window.addEventListener("keydown", (e) => {
@@ -153,11 +157,16 @@ onMounted(async () => {
       else if (e.key == " ") {
         const l = levelSelect.getLevel();
         setupGame(l.w, l.h);
-      }
+      }else if (e.key == "Escape") {
+        popup.hidden = !popup.hidden;
+      } 
     } else if (currScene == scene.game) {
       if (e.key == " ") {
         setupLevelSelect();
         currScene = scene.levelSelect;
+        return;
+      }else if (e.key == "Escape") {
+        popup.hidden = !popup.hidden;
         return;
       }
       keys[e.key] = true;

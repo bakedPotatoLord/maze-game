@@ -33,7 +33,6 @@ export default class Node{
 
 
   topLine(ctx:CanvasRenderingContext2D,blockSize:number){
-    console.log('topline called')
     ctx.strokeStyle = 'black'
     
     ctx.beginPath()

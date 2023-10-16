@@ -36,7 +36,6 @@ export default class Maze {
 		this.setNodeWalls(this.flatNodes)
 		//generate imageData
 		this.generate()
-		console.log("maze constructed successfully")
 	}
 
 	reset(numW = 20, numH = 20, blocksize = 20) {

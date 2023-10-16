@@ -13,9 +13,6 @@ export function makeSquareNodeMap(cw:number,ch:number,blockSize:number){
       arr[i][j] = new Node(i*blockSize+10,j*blockSize+10)
     }
   }
-
-  console.log("nodemap created")
-
   return arr
 }
 

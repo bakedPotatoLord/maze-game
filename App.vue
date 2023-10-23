@@ -165,7 +165,7 @@ onMounted(async () => {
         setupLevelSelect();
         currScene = scene.levelSelect;
         return;
-      }else if (e.key == "Escape") {
+      }else if (e.key == "Shift") {
         popup.hidden = !popup.hidden;
         return;
       }

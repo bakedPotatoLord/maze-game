@@ -29,7 +29,8 @@ export default class LevelSelect {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.font = "46px Arial"
+    ctx.font = "500 46px Montserrat"  
+    
     ctx.fillStyle = "white"
     ctx.lineWidth = 3
     ctx.strokeStyle = "black"

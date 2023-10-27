@@ -1,95 +1,9 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600&display=swap');
 
 body{
   margin: 0px;
   background-color: rgb(38, 38, 38);
-}
-
-*{
-  font-family: 'Open Sans', sans-serif;
-}
-
-
-form{
-  background-color: rgb(81, 73, 83);
-  border-radius: 20px;
-  text-align: center;
-  padding-bottom: 2%;
-  width:75%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-}
-
-table{
-  padding: 5%;
-  margin-left: auto;
-  margin-right: auto;
-
-}
-
-table tr th{
-  text-align: left;
-}
-
-label{
-  color: wheat;
-  font-weight: bold;
-}
-
-input,
-select{
-  border: 2px inset rgb(118, 118, 118);
-  background-color: grey;
-  color:whitesmoke;
-  font-weight: bold;
-}
-
-input[type=submit],
-.mazeOptions button{
-  border: none;
-  padding: 4px;
-  border-radius: 4px;
-  margin:5px;
-  background-color:rgb(35, 37, 41);
-  color:aliceblue;
-  font-weight: bold;
-  transition:ease-in-out;
-  transition-duration: 250ms;
-}
-
-
-form a{
-  color: wheat;
-  text-decoration: underline;
-
-}
-
-.mazeOptions{
-  background-color: rgb(81, 73, 83);
-  border-radius: 20px;
-  text-align: center;
-  padding-bottom: 1%;
-  padding-top: 1%;
-  width:75%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  color:whitesmoke
-}
-
-.stateContainer{
-  text-align: center;
-}
-
-#state{
-  color:wheat;
-  font-size: small;
-}
-
-.canvases{
-  text-align: center;
 }
 
 canvas{

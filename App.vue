@@ -68,10 +68,8 @@ onMounted(async () => {
 
       if(n[(player.x-10)/20][(player.y-10)/20] == maze.endingNode){
         const time = Date.now() - gameStart
-
         currScene = scene.levelSelect
         setupLevelSelect()
-
         await popup.handleEnd(time);
       }
     } else if (currScene == scene.levelSelect) {
@@ -138,7 +136,7 @@ onMounted(async () => {
     n = maze.nodes;
     player.reset();
     currScene = scene.game;
-
+    popup.gameLevel = levelSelect.selected.level
     gameStart = Date.now()
   }
 

@@ -2,7 +2,7 @@
 export default class Popup{
   hidden = true
   scores:number[]
-
+  gameLevel:number
   currLevel = 0
   
   constructor(){
@@ -17,14 +17,17 @@ export default class Popup{
   getCurrScore(){
     const ms = this.scores.at(this.currLevel )
     if(ms == null) return "Unset"
-    const s = (ms/1000).toFixed(2)
+    let s = (ms/1000%60).toFixed(2)
+    if(Number(s).toFixed(0).length == 1) s = "0"+s
     const m = (ms/1000/60).toFixed(0)
+    console.log(m,s)
     return `${m}:${s}`
   }
 
   async handleEnd(time:number){
-    if( this.scores[this.currLevel] == null || time < this.scores[this.currLevel ]){
-      this.scores[this.currLevel ] = time
+    this.currLevel = this.gameLevel
+    if( this.scores[this.gameLevel] == null || time < this.scores[this.currLevel ]){
+      this.scores[this.gameLevel ] = time
       
       await this.saveScores(time)
     }
@@ -54,11 +57,11 @@ export default class Popup{
       ctx.fillText("High Scores",cw*0.5,ch*0.30 )
 
       ctx.font = `${40*(cw/1200)}px Arial`
-      ctx.fillText(`Level ${this.currLevel }`,cw*0.5,ch*0.5250 )
+      ctx.fillText(`Best Time: ${this.getCurrScore()}`,cw*0.5,ch*0.5250 )
       
       ctx.font = `${40*(cw/1200)}px Arial`
-      ctx.fillText(`Best Time: ${this.getCurrScore()}`,cw*0.5,ch*0.475 )
-
+      ctx.fillText( `Level ${this.currLevel }`,cw*0.5,ch*0.475 )
+     
       ctx.fillStyle = "black"
       ctx.beginPath()
       ctx.moveTo(cw*0.22,ch*0.5)

@@ -52,6 +52,7 @@ onMounted(async () => {
   let welcomeSolution: Node[] | null;
 
   let keyHandle: NodeJS.Timeout;
+  let backToWelcomeTimeout: NodeJS.Timeout
 
   const maze = new Maze(numW(), numH(), blocksize);
   let n = maze.nodes;
@@ -129,8 +130,8 @@ onMounted(async () => {
   function setupLevelSelect() {
     c.width =cw = 1200;
     c.height =ch = 800;
-
-    setTimeout(() => {
+    clearTimeout(backToWelcomeTimeout)
+    backToWelcomeTimeout= setTimeout(() => {
       setupWelcome();
     },
     20_000)
@@ -145,6 +146,7 @@ onMounted(async () => {
     currScene = scene.game;
     popup.gameLevel = levelSelect.selected.level
     gameStart = Date.now()
+    clearTimeout(backToWelcomeTimeout)
   }
 
   function keyHandler() {

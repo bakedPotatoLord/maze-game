@@ -30,6 +30,8 @@ const blocksize = 20;
 const numW = () => cw / blocksize;
 const numH = () => ch / blocksize;
 
+let gameStart:number
+
 useSeoMeta({
   title: "Maze Game",
   ogTitle: "Maze Game",
@@ -63,6 +65,15 @@ onMounted(async () => {
     if (currScene == scene.game) {
       maze.draw(ctx);
       player.draw(ctx);
+
+      if(n[(player.x-10)/20][(player.y-10)/20] == maze.endingNode){
+        const time = Date.now() - gameStart
+
+        currScene = scene.levelSelect
+        setupLevelSelect()
+
+        await popup.handleEnd(time);
+      }
     } else if (currScene == scene.levelSelect) {
       ctx.save();
       ctx.scale(2, 2);
@@ -127,6 +138,8 @@ onMounted(async () => {
     n = maze.nodes;
     player.reset();
     currScene = scene.game;
+
+    gameStart = Date.now()
   }
 
   function keyHandler() {
@@ -144,30 +157,50 @@ onMounted(async () => {
   }
 
   window.addEventListener("keydown", (e) => {
-    const up = ["w", "ArrowUp"],
-      down = ["s", "ArrowDown"],
-      left = ["a", "ArrowLeft"],
-      right = ["d", "ArrowRight"];
+    const up =new  Set(["w", "ArrowUp"]),
+      down = new Set(["s", "ArrowDown"]),
+      left = new Set(["a", "ArrowLeft"]),
+      right = new Set(["d", "ArrowRight"]);
     e.preventDefault();
+
+    if(popup.hidden && e.key == "Backspace"){
+      popup.hidden = false;
+      return
+    }
+    if(!popup.hidden){
+      if(left.has(e.key)){
+        popup.currLevel+=11
+        popup.currLevel %= 12
+        return
+      }
+      if(right.has(e.key)){
+        popup.currLevel+=1
+        popup.currLevel %= 12
+        return
+      }
+      if(e.key == "Backspace"){
+        popup.hidden = true;
+      }
+      return
+    }
+
+
     if (currScene == scene.welcome) {
     } else if (currScene == scene.levelSelect) {
-      if (up.includes(e.key)) levelSelect.moveUp();
-      else if (down.includes(e.key)) levelSelect.moveDown();
-      else if (left.includes(e.key)) levelSelect.moveLeft();
-      else if (right.includes(e.key)) levelSelect.moveRight();
+      if (up.has(e.key)) levelSelect.moveUp();
+      else if (down.has(e.key)) levelSelect.moveDown();
+      else if (left.has(e.key)) levelSelect.moveLeft();
+      else if (right.has(e.key)) levelSelect.moveRight();
       else if (e.key == " ") {
         const l = levelSelect.getLevel();
         setupGame(l.w, l.h);
-      }else if (e.key == "Backspace") {
-        popup.hidden = !popup.hidden;
-      } 
+      }
     } else if (currScene == scene.game) {
       if (e.key == " ") {
         setupLevelSelect();
         currScene = scene.levelSelect;
         return;
       }else if (e.key == "Backspace") {
-        popup.hidden = !popup.hidden;
         return;
       }
       keys[e.key] = true;

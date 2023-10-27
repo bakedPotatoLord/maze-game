@@ -14,6 +14,6 @@ export default defineNuxtConfig({
   },
 
   app:{
-    baseURL: '/maze-game/'
+    baseURL: '/'
   },
 })

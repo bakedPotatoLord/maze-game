@@ -1,13 +1,14 @@
 import { Scores } from "~/models/scores";
 
 export default defineEventHandler(async (event) => {
-   let scores = await Scores.findOne() ?? <never>(()=>{throw new Error("Scores not found")})
-   console.log(scores.num)
+   let {num} = await Scores.findOne() ?? <never>(()=>{throw new Error("Scores not found")})
+   console.log(num)
    let {level,newScore} = await readBody(event)
+   console.log("event")
 
-   scores.num[level] = newScore
+   num[level] = newScore
 
-   await Scores.updateOne({},{num:scores})
+   await Scores.updateOne({},{num})
 
    return {
       ok:true

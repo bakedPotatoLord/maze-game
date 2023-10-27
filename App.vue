@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+import "~/assets/style.css"
 import Player from "~/utils/Player";
 import Maze from "~/utils/Maze";
 import type Node from "~/utils/Node";

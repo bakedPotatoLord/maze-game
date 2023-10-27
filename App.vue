@@ -120,13 +120,20 @@ onMounted(async () => {
   }
 
   async function setupWelcome() {
-    c.width = cw;
-    c.height = ch;
+    GlobalState.leaveWelcome = false
+    currScene = scene.welcome
+    c.width = cw = 1200
+    c.height = ch= 800;
   }
 
   function setupLevelSelect() {
     c.width =cw = 1200;
     c.height =ch = 800;
+
+    setTimeout(() => {
+      setupWelcome();
+    },
+    20_000)
   }
 
   function setupGame(w: number, h: number) {
@@ -151,7 +158,6 @@ onMounted(async () => {
       if ((keys["d"] || keys["ArrowRight"]) && !walls?.right) player.x += 20;
       player.draw(ctx);
     }
-
   }
 
   window.addEventListener("keydown", (e) => {

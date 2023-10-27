@@ -158,7 +158,7 @@ onMounted(async () => {
       else if (e.key == " ") {
         const l = levelSelect.getLevel();
         setupGame(l.w, l.h);
-      }else if (e.key == "Escape") {
+      }else if (e.key == "Backspace") {
         popup.hidden = !popup.hidden;
       } 
     } else if (currScene == scene.game) {
@@ -166,7 +166,7 @@ onMounted(async () => {
         setupLevelSelect();
         currScene = scene.levelSelect;
         return;
-      }else if (e.key == "Shift") {
+      }else if (e.key == "Backspace") {
         popup.hidden = !popup.hidden;
         return;
       }

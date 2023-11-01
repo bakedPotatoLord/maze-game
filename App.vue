@@ -163,6 +163,13 @@ onMounted(async () => {
   }
 
   window.addEventListener("keydown", (e) => {
+
+    clearTimeout(backToWelcomeTimeout)
+    backToWelcomeTimeout= setTimeout(() => {
+      setupWelcome();
+    },
+    100_000)
+
     const up =new  Set(["w", "ArrowUp"]),
       down = new Set(["s", "ArrowDown"]),
       left = new Set(["a", "ArrowLeft"]),

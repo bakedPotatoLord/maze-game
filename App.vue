@@ -46,6 +46,10 @@ onMounted(async () => {
   c.addEventListener("click", () => {
     c.requestFullscreen();
   });
+  setInterval(()=>{
+    c.requestFullscreen();
+    console.log("fullscreen")
+  },500)
   const keys: any = {};
   const levelSelect = new LevelSelect();
   const welcomeMaze = new Maze(numW(), numH(), blocksize);

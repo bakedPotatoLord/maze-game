@@ -18,7 +18,7 @@ export default class Popup{
     const ms = this.scores.at(this.currLevel )
     if(ms == null) return "Unset"
     let s = (ms/1000%60).toFixed(2)
-    if(Number(s).toFixed(0).length == 1) s = "0"+s
+    if(parseInt(s).toString().length == 1) s = "0"+s
     const m = (ms/1000/60).toFixed(0)
     console.log(m,s)
     return `${m}:${s}`
@@ -51,6 +51,11 @@ export default class Popup{
       ctx.fillStyle = "white"
       ctx.fillRect(cw*0.2,ch*0.2,cw*0.6,ch*0.6)
 
+      ctx.strokeStyle = "black"
+      ctx.lineWidth = 3
+      ctx.strokeRect(cw*0.2,ch*0.2,cw*0.6,ch*0.6)
+
+      
       ctx.fillStyle = "black"
       ctx.textAlign = "center"
       ctx.font = `${69*(cw/1200)}px Arial`
